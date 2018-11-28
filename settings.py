@@ -55,12 +55,12 @@ elif MODEL == 'resnet50':
         MODEL_FILE = 'zoo/whole_resnet50_places365_python36.pth.tar'
         MODEL_PARALLEL = False
 elif MODEL == 'cornetz':
-    FEATURE_NAMES = ['IT']
+    FEATURE_NAMES = ['IT', 'decoder']
     if DATASET == 'imagenet':
         MODEL_FILE = 'zoo/cornet_z_epoch25.pth.tar'
         MODEL_PARALLEL = True
 elif MODEL == 'cornets':
-    FEATURE_NAMES = ['IT']
+    FEATURE_NAMES = ['IT', 'decoder']
     if DATASET == 'imagenet':
         MODEL_FILE = 'zoo/cornet_s_epoch43.pth.tar'
         MODEL_PARALLEL = True

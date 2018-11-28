@@ -54,50 +54,51 @@ class FeatureOperator:
                 return wholefeatures, maxfeatures
 
         num_batches = (len(loader.indexes) + loader.batch_size - 1) / loader.batch_size
-        for batch_idx,batch in enumerate(loader.tensor_batches(bgr_mean=self.mean)):
-            del features_blobs[:]
-            input = batch[0]
-            batch_size = len(input)
-            print('extracting feature from batch %d / %d' % (batch_idx+1, num_batches))
-            input = torch.from_numpy(input[:, ::-1, :, :].copy())
-            input.div_(255.0 * 0.224)
-            if settings.GPU:
-                input = input.cuda()
-            input_var = V(input,volatile=True)
-            logit = model.forward(input_var)
-            while np.isnan(logit.data.max().cpu()):
-                print("nan") #which I have no idea why it will happen
+        with torch.no_grad():
+            for batch_idx,batch in enumerate(loader.tensor_batches(bgr_mean=self.mean)):
                 del features_blobs[:]
+                input = batch[0]
+                batch_size = len(input)
+                print('extracting feature from batch %d / %d' % (batch_idx+1, num_batches))
+                input = torch.from_numpy(input[:, ::-1, :, :].copy())
+                input.div_(255.0 * 0.224)
+                if settings.GPU:
+                    input = input.cuda()
+                input_var = V(input)
                 logit = model.forward(input_var)
-            if maxfeatures[0] is None:
-                # initialize the feature variable
+                while np.isnan(logit.data.max().cpu()):
+                    print("nan") #which I have no idea why it will happen
+                    del features_blobs[:]
+                    logit = model.forward(input_var)
+                if maxfeatures[0] is None:
+                    # initialize the feature variable
+                    for i, feat_batch in enumerate(features_blobs):
+                        size_features = (len(loader.indexes), feat_batch.shape[1])
+                        if memmap:
+                            maxfeatures[i] = np.memmap(mmap_max_files[i],dtype=float,mode='w+',shape=size_features)
+                        else:
+                            maxfeatures[i] = np.zeros(size_features)
+                if len(feat_batch.shape) == 4 and wholefeatures[0] is None:
+                    # initialize the feature variable
+                    for i, feat_batch in enumerate(features_blobs):
+                        size_features = (
+                        len(loader.indexes), feat_batch.shape[1], feat_batch.shape[2], feat_batch.shape[3])
+                        features_size[i] = size_features
+                        if memmap:
+                            wholefeatures[i] = np.memmap(mmap_files[i], dtype=float, mode='w+', shape=size_features)
+                        else:
+                            wholefeatures[i] = np.zeros(size_features)
+                np.save(features_size_file, features_size)
+                start_idx = batch_idx*settings.BATCH_SIZE
+                end_idx = min((batch_idx+1)*settings.BATCH_SIZE, len(loader.indexes))
                 for i, feat_batch in enumerate(features_blobs):
-                    size_features = (len(loader.indexes), feat_batch.shape[1])
-                    if memmap:
-                        maxfeatures[i] = np.memmap(mmap_max_files[i],dtype=float,mode='w+',shape=size_features)
-                    else:
-                        maxfeatures[i] = np.zeros(size_features)
-            if len(feat_batch.shape) == 4 and wholefeatures[0] is None:
-                # initialize the feature variable
-                for i, feat_batch in enumerate(features_blobs):
-                    size_features = (
-                    len(loader.indexes), feat_batch.shape[1], feat_batch.shape[2], feat_batch.shape[3])
-                    features_size[i] = size_features
-                    if memmap:
-                        wholefeatures[i] = np.memmap(mmap_files[i], dtype=float, mode='w+', shape=size_features)
-                    else:
-                        wholefeatures[i] = np.zeros(size_features)
-            np.save(features_size_file, features_size)
-            start_idx = batch_idx*settings.BATCH_SIZE
-            end_idx = min((batch_idx+1)*settings.BATCH_SIZE, len(loader.indexes))
-            for i, feat_batch in enumerate(features_blobs):
-                if len(feat_batch.shape) == 4:
-                    wholefeatures[i][start_idx:end_idx] = feat_batch
-                    maxfeatures[i][start_idx:end_idx] = np.max(np.max(feat_batch,3),2)
-                elif len(feat_batch.shape) == 3:
-                    maxfeatures[i][start_idx:end_idx] = np.max(feat_batch, 2)
-                elif len(feat_batch.shape) == 2:
-                    maxfeatures[i][start_idx:end_idx] = feat_batch
+                    if len(feat_batch.shape) == 4:
+                        wholefeatures[i][start_idx:end_idx] = feat_batch
+                        maxfeatures[i][start_idx:end_idx] = np.max(np.max(feat_batch,3),2)
+                    elif len(feat_batch.shape) == 3:
+                        maxfeatures[i][start_idx:end_idx] = np.max(feat_batch, 2)
+                    elif len(feat_batch.shape) == 2:
+                        maxfeatures[i][start_idx:end_idx] = feat_batch
         if len(feat_batch.shape) == 2:
             wholefeatures = maxfeatures
         return wholefeatures,maxfeatures
