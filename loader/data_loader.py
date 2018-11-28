@@ -511,11 +511,10 @@ class SegmentationPrefetcher:
 
     def batches(self):
         '''Iterator for all batches'''
-        while True:
-            batch = self.fetch_batch()
-            if batch is None:
-                raise StopIteration
+        batch = self.fetch_batch()
+        while batch:
             yield batch
+            batch = self.fetch_batch()
 
     def fetch_batch(self):
         '''Returns a single batch as an array of dictionaries.'''
@@ -537,12 +536,10 @@ class SegmentationPrefetcher:
 
     def tensor_batches(self, bgr_mean=None, global_labels=False):
         '''Returns a single batch as an array of tensors, one per category.'''
-        while True:
-            batch = self.fetch_tensor_batch(
-                    bgr_mean=bgr_mean, global_labels=global_labels)
-            if batch is None:
-                raise StopIteration
+        batch = self.fetch_tensor_batch(bgr_mean=bgr_mean, global_labels=global_labels)
+        while batch:
             yield batch
+            batch = self.fetch_tensor_batch(bgr_mean=bgr_mean, global_labels=global_labels)
 
     def form_caffe_tensors(self, batch, bgr_mean=None, global_labels=False):
         # Assemble a batch in [{'cat': data,..},..] format into
