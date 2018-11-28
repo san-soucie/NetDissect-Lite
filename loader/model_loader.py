@@ -1,6 +1,10 @@
 import settings
 import torch
 import torchvision
+from nets.cornet.cornet_z import CORnet_Z
+from nets.cornet.cornet_s import CORnet_S
+
+local_model_defs = { 'cornetz': CORnet_Z, 'cornets': CORnet_S }
 
 def loadmodel(hook_fn):
     if settings.MODEL_FILE is None:
@@ -8,7 +12,10 @@ def loadmodel(hook_fn):
     else:
         checkpoint = torch.load(settings.MODEL_FILE)
         if type(checkpoint).__name__ == 'OrderedDict' or type(checkpoint).__name__ == 'dict':
-            model = torchvision.models.__dict__[settings.MODEL](num_classes=settings.NUM_CLASSES)
+            if settings.MODEL in local_model_defs.keys():
+                model = local_model_defs[settings.MODEL]()
+            else:
+                model = torchvision.models.__dict__[settings.MODEL](num_classes=settings.NUM_CLASSES)
             if settings.MODEL_PARALLEL:
                 state_dict = {str.replace(k, 'module.', ''): v for k, v in checkpoint[
                     'state_dict'].items()}  # the data parallel layer will add 'module' before each layer name
