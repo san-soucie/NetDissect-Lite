@@ -1,0 +1,8 @@
+result/
+.idea/
+*.pyc
+**/__pycache__/
+nets/
+zoo/
+dataset/
+*.old/

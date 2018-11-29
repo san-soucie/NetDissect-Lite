@@ -2,9 +2,10 @@ import settings
 import torch
 import torchvision
 from nets.cornet.cornet_z import CORnet_Z
+from nets.cornet.cornet_r import CORnet_R
 from nets.cornet.cornet_s import CORnet_S
 
-local_model_defs = { 'cornetz': CORnet_Z, 'cornets': CORnet_S }
+local_model_defs = { 'cornetz': CORnet_Z, 'cornetr': CORnet_R, 'cornets': CORnet_S }
 
 def loadmodel(hook_fn):
     if settings.MODEL_FILE is None:

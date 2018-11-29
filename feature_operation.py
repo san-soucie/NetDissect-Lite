@@ -14,6 +14,7 @@ from loader.data_loader import SegmentationData, SegmentationPrefetcher
 
 features_blobs = []
 def hook_feature(module, input, output):
+    features_blobs.clear()
     features_blobs.append(output.data.cpu().numpy())
 
 
@@ -27,6 +28,7 @@ class FeatureOperator:
         self.mean = [109.5388,118.6897,124.6901]
 
     def feature_extraction(self, model=None, memmap=True):
+        global feature_blobs
         loader = self.loader
         # extract the max value activaiton for each image
         maxfeatures = [None] * len(settings.FEATURE_NAMES)
