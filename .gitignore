@@ -2,7 +2,7 @@ result/
 .idea/
 *.pyc
 **/__pycache__/
-nets/
+#nets/
 zoo/
 dataset/
 *.old/
