@@ -2,7 +2,7 @@
 GPU = True                                  # running on GPU is highly suggested
 TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
 CLEAN = True                               # set to "True" if you want to clean the temporary large files after generating result
-MODEL = 'cornetr'                          # model arch: resnet18, alexnet, resnet50, densenet161
+MODEL = 'densenet169'                          # model arch: resnet18, alexnet, resnet50, densenet161
 DATASET = 'imagenet'                       # model trained on: places365 or imagenet
 QUANTILE = 0.005                            # the threshold used for activation
 SEG_THRESHOLD = 0.04                        # the threshold used for visualization
@@ -25,6 +25,7 @@ OUTPUT_FOLDER = "result/pytorch_"+MODEL+"_"+DATASET # result will be stored in t
 # TALLY_BATCH_SIZE: batch size used in tallying
 # INDEX_FILE: if you turn on the TEST_MODE, actually you should provide this file on your own
 
+MODEL_FILE = None
 if MODEL != 'alexnet':
     DATA_DIRECTORY = 'dataset/broden1_224'
     IMG_SIZE = 224
@@ -44,7 +45,7 @@ if MODEL == 'resnet18':
     elif DATASET == 'imagenet':
         MODEL_FILE = None
         MODEL_PARALLEL = False
-elif MODEL == 'densenet161':
+elif MODEL.startswith('densenet'):
     FEATURE_NAMES = ['features']
     if DATASET == 'places365':
         MODEL_FILE = 'zoo/whole_densenet161_places365_python36.pth.tar'
