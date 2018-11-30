@@ -47,7 +47,7 @@ if MODEL == 'resnet18':
         MODEL_PARALLEL = False
 elif MODEL.startswith('densenet'):
     FEATURE_NAMES = ['features']
-    if DATASET == 'places365':
+    if DATASET == 'places365' and MODEL == 'densenet161':
         MODEL_FILE = 'zoo/whole_densenet161_places365_python36.pth.tar'
         MODEL_PARALLEL = False
 elif MODEL == 'resnet50':
