@@ -25,6 +25,7 @@ def loadmodel(hook_fn):
             model.load_state_dict(state_dict)
         else:
             model = checkpoint
+    #print(model._modules)
     for name in settings.FEATURE_NAMES:
         model._modules.get(name).register_forward_hook(hook_fn)
     if settings.GPU:
