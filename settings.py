@@ -72,6 +72,8 @@ elif MODEL == 'cornets':
     if DATASET == 'imagenet':
         MODEL_FILE = 'zoo/cornet_s_epoch43.pth.tar'
         MODEL_PARALLEL = True
+elif MODEL == 'inception_v3':
+    FEATURE_NAMES = ['Mixed_7c']
 
 if TEST_MODE:
     WORKERS = 1
