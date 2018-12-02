@@ -78,6 +78,8 @@ elif MODEL == 'xception':
     FEATURE_NAMES = ['conv4']
 elif MODEL == 'pnasnet5large':
     FEATURE_NAMES = ['avg_pool']
+elif MODEL == 'inceptionresnetv2':
+    FEATURE_NAMES = ['avgpool_1a']
 
 if TEST_MODE:
     WORKERS = 1
