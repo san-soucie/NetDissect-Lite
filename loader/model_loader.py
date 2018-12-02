@@ -39,9 +39,14 @@ def loadmodel(hook_fn):
             model.load_state_dict(state_dict)
         else:
             model = checkpoint
-    #print(model._modules)
-    for name in settings.FEATURE_NAMES:
-        model._modules.get(name).register_forward_hook(hook_fn)
+    try:
+        for name in settings.FEATURE_NAMES:
+            model._modules.get(name).register_forward_hook(hook_fn)
+    except AttributeError as ae:
+        print('Failed to find FEATURE_NAMES for this model!')
+        print('Perhaps you need to add an entry to settings.py for this model? Here are the modules:')
+        print(model._modules)
+        raise ae
     if settings.GPU:
         model.cuda()
     model.eval()
