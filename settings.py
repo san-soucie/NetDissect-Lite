@@ -2,7 +2,7 @@
 GPU = True                                  # running on GPU is highly suggested
 TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
 CLEAN = True                               # set to "True" if you want to clean the temporary large files after generating result
-MODEL = 'inception_v3'                          # model arch: resnet18, alexnet, resnet50, densenet161
+MODEL = 'densenet121'                          # model arch: resnet18, alexnet, resnet50, densenet161
 DATASET = 'imagenet'                       # model trained on: places365 or imagenet
 QUANTILE = 0.005                            # the threshold used for activation
 SEG_THRESHOLD = 0.04                        # the threshold used for visualization
@@ -76,6 +76,8 @@ elif MODEL == 'inception_v3':
     FEATURE_NAMES = ['Mixed_7c']
 elif MODEL == 'xception':
     FEATURE_NAMES = ['conv4']
+elif MODEL == 'pnasnet5large':
+    FEATURE_NAMES = ['avg_pool']
 
 if TEST_MODE:
     WORKERS = 1
