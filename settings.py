@@ -74,6 +74,8 @@ elif MODEL == 'cornets':
         MODEL_PARALLEL = True
 elif MODEL == 'inception_v3':
     FEATURE_NAMES = ['Mixed_7c']
+elif MODEL == 'xception':
+    FEATURE_NAMES = ['conv4']
 
 if TEST_MODE:
     WORKERS = 1
