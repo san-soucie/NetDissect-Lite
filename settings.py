@@ -2,7 +2,7 @@
 GPU = True                                  # running on GPU is highly suggested
 TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
 CLEAN = True                               # set to "True" if you want to clean the temporary large files after generating result
-MODEL = 'squeezenet1_0'                          # model arch: resnet18, alexnet, resnet50, densenet161
+MODEL = 'alexnet'                          # model arch: resnet18, alexnet, resnet50, densenet161
 DATASET = 'imagenet'                       # model trained on: places365 or imagenet
 QUANTILE = 0.005                            # the threshold used for activation
 SEG_THRESHOLD = 0.04                        # the threshold used for visualization
@@ -87,6 +87,8 @@ elif MODEL == 'nasnetamobile':
 elif MODEL == 'alexnet':
     FEATURE_NAMES = ['conv5']
 elif MODEL.startswith('squeezenet1'):
+    FEATURE_NAMES = ['features']
+elif MODEL == 'alexnet':
     FEATURE_NAMES = ['features']
 
 
