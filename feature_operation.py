@@ -1,4 +1,3 @@
-
 import os
 from torch.autograd import Variable as V
 from scipy.misc import imresize
