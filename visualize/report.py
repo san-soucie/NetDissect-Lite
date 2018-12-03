@@ -52,13 +52,25 @@ def generate_html_summary(ds, layer, maxfeature=None, features=None, thresholds=
         ])
     html.append('<div class="gridheader">')
     html.append('<div class="layerinfo">')
+    labels = list(record['label'] for record in rendered_order
+            if float(record['score']) >= settings.SCORE_THRESHOLD)
+    num_concepts = len(set(labels))
     html.append('%d/%d units covering %d concepts with IoU &ge; %.2f' % (
         len([record for record in rendered_order
             if float(record['score']) >= settings.SCORE_THRESHOLD]),
         len(rendered_order),
-        len(set(record['label'] for record in rendered_order
-            if float(record['score']) >= settings.SCORE_THRESHOLD)),
+        num_concepts,
         settings.SCORE_THRESHOLD))
+    label_dict = {}
+    for label in labels:
+        label_dict[label] = label_dict.get(label, 0) + 1
+    avg, rms_avg, smr_avg = 0,0,0
+    for _, v in label_dict:
+        avg += v
+        rms_avg += v**2
+        smr_avg += v**0.5
+    avg, rms_avg, smr_avg = avg / num_concepts, (rms_avg / num_concepts)**0.5, (smr_avg / num_concepts)**2
+    html.append('. Instances per concept: avg %.3f rms %.3f smr %.3f' % (avg, rms_avg, smr_avg))
     html.append('</div>')
     html.append(html_sortheader)
     html.append('</div>')

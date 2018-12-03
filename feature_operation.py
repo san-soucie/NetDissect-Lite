@@ -57,13 +57,12 @@ class FeatureOperator:
 
         num_batches = (len(loader.indexes) + loader.batch_size - 1) / loader.batch_size
         with torch.no_grad():
-            for batch_idx,batch in enumerate(loader.tensor_batches(bgr_mean=self.mean)):
+            for batch_idx,batch in enumerate(loader.tensor_batches(bgr_mean=model)):
                 del features_blobs[:]
                 input = batch[0]
                 batch_size = len(input)
                 print('extracting feature from batch %d / %d' % (batch_idx+1, num_batches))
                 input = torch.from_numpy(input[:, ::-1, :, :].copy())
-                input.div_(255.0 * 0.224)
                 if settings.GPU:
                     input = input.cuda()
                 input_var = V(input)

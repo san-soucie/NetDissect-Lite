@@ -12,15 +12,17 @@ def getmodel(name, pretrained=True, dataset='imagenet', num_classes=1000):
     if name in local_model_defs.keys():
         return local_model_defs[name]()
     elif pretrained:
-        if name in torchvision.models.__dict__ and dataset == 'imagenet':
+        if name in pretrainedmodels.models.__dict__:
+            return pretrainedmodels.__dict__[name](pretrained=dataset, num_classes=num_classes)
+        elif name in torchvision.models.__dict and dataset == 'imagenet':
             return torchvision.models.__dict__[name](pretrained=True, num_classes=num_classes)
         else:
-            return pretrainedmodels.__dict__[name](pretrained=dataset, num_classes=num_classes)
+            raise FileNotFoundError('Failed to find pretrained model \'' + name + "'")
     else:
-        if name in torchvision.models.__dict__:
-            return torchvision.models.__dict__[name](pretrained=False, num_classes=num_classes)
-        elif name in pretrainedmodels.__dict__:
+        if name in pretrainedmodels.__dict__:
             return pretrainedmodels.__dict__[name](pretrained=None, num_classes=num_classes)
+        elif name in torchvision.models.__dict__:
+            return torchvision.models.__dict__[name](pretrained=False, num_classes=num_classes)
         else:
             raise FileNotFoundError('Failed to find model \'' + name + "'")
 

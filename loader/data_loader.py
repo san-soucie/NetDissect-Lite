@@ -674,7 +674,7 @@ def wants(what, option):
         return True
     return what in option
 
-def normalize_image(rgb_image, bgr_mean):
+def normalize_image(rgb_image, model):
     """
     Load input image and preprocess for Caffe:
     - cast to float
@@ -685,10 +685,15 @@ def normalize_image(rgb_image, bgr_mean):
     img = numpy.array(rgb_image, dtype=numpy.float32)
     if (img.ndim == 2):
         img = numpy.repeat(img[:,:,None], 3, axis = 2)
-    img = img[:,:,::-1]
-    if bgr_mean is not None:
-        img -= bgr_mean
-    img = img.transpose((2,0,1))
+    if model.input_space == 'bgr':
+        img = img[:,:,::-1]
+    if model.std is not None or model.mean is not None:
+        img = (img - np.mean(img, axis=(0,1))) * (model.std / np.std(img, axis=(0,1))) + model.mean
+    if list(img.shape[::-1]) == model.input_size:
+        img = img.transpose((2,0,1))
+    assert(list(img.shape) == model.input_size)
+    if model.input_range is not None:
+        img = np.clip(img, model.input_range[0], model.input_range[1])
     return img
 
 def normalize_label(label_data, shape, flatten=False):
