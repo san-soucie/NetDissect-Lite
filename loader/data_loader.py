@@ -6,6 +6,7 @@ import random
 import signal
 import csv
 import settings
+import sys
 import numpy as np
 from collections import OrderedDict
 from scipy.misc import imread
@@ -689,9 +690,8 @@ def normalize_image(rgb_image, model):
         img = img[:,:,::-1]
     if model.std is not None or model.mean is not None:
         img = (img - np.mean(img, axis=(0,1))) * (model.std / np.std(img, axis=(0,1))) + model.mean
-    if list(img.shape[::-1]) == model.input_size:
+    if list(img.shape[::-1]) == model.input_size or img.shape[-1] == model.input_size[0]:
         img = img.transpose((2,0,1))
-    assert(list(img.shape) == model.input_size)
     if model.input_range is not None:
         img = np.clip(img, model.input_range[0], model.input_range[1])
     return img

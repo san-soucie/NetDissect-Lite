@@ -14,7 +14,7 @@ def getmodel(name, pretrained=True, dataset='imagenet', num_classes=1000):
     elif pretrained:
         if name in pretrainedmodels.models.__dict__:
             return pretrainedmodels.__dict__[name](pretrained=dataset, num_classes=num_classes)
-        elif name in torchvision.models.__dict and dataset == 'imagenet':
+        elif name in torchvision.models.__dict__ and dataset == 'imagenet':
             return torchvision.models.__dict__[name](pretrained=True, num_classes=num_classes)
         else:
             raise FileNotFoundError('Failed to find pretrained model \'' + name + "'")
