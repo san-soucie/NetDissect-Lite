@@ -82,6 +82,14 @@ class CORnet_R(nn.Module):
             ('linear', nn.Linear(512, 1000))
         ]))
 
+        self.input_size = [3, 224, 224]
+        self.input_space = 'rgb'
+        self.input_range = None
+        self.mean = [0.485, 0.456, 0.406]
+        self.std = [0.229, 0.224, 0.225]
+        self.features = lambda: self.IT
+        self.logits = lambda: self.decoder
+
     def forward(self, inp):
         outputs = {'inp': inp}
         states = {}

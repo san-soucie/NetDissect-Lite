@@ -62,7 +62,7 @@ class FeatureOperator:
                 input = batch[0]
                 batch_size = len(input)
                 print('extracting feature from batch %d / %d' % (batch_idx+1, num_batches))
-                input = torch.from_numpy(input[:, ::-1, :, :].copy())
+                input = torch.from_numpy(input).float()
                 if settings.GPU:
                     input = input.cuda()
                 input_var = V(input)

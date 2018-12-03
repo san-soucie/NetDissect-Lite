@@ -2,7 +2,6 @@ import math
 from collections import OrderedDict
 from torch import nn
 
-
 class Flatten(nn.Module):
 
     """
@@ -109,6 +108,14 @@ def CORnet_S():
             ('output', Identity())
         ])))
     ]))
+
+    model.input_size = [3, 224, 224]
+    model.input_space = 'rgb'
+    model.input_range = None
+    model.mean = [0.485, 0.456, 0.406]
+    model.std = [0.229, 0.224, 0.225]
+    model.features = lambda: model._modules.get('IT')
+    model.logits = lambda: model._modules.get('decoder')
 
     # weight initialization
     for m in model.modules():
