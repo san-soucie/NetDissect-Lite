@@ -85,10 +85,8 @@ elif MODEL == 'nasnetalarge':
 elif MODEL == 'nasnetamobile':
     FEATURE_NAMES = ['cell_15']
 elif MODEL == 'alexnet':
-    FEATURE_NAMES = ['conv5']
-elif MODEL.startswith('squeezenet1'):
     FEATURE_NAMES = ['features']
-elif MODEL == 'alexnet':
+elif MODEL.startswith('squeezenet1'):
     FEATURE_NAMES = ['features']
 
 
