@@ -65,7 +65,7 @@ def generate_html_summary(ds, layer, maxfeature=None, features=None, thresholds=
     for label in labels:
         label_dict[label] = label_dict.get(label, 0) + 1
     avg, rms_avg, smr_avg = 0,0,0
-    for _, v in label_dict:
+    for v in label_dict.values():
         avg += v
         rms_avg += v**2
         smr_avg += v**0.5
