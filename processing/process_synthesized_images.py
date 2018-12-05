@@ -46,7 +46,7 @@ class CustomDataset(torch.utils.data.Dataset):
 
         self.filenames = os.listdir(folder_name)
         self.root = folder_name
-        samples = [(filename, process_target_class(filename, class_to_idx)) for filename in self.filenames]
+        samples = [filename for filename in self.filenames]
         scores = {filename: process_score(filename) for filename in self.filenames}
         self.loader = torchvision.datasets.folder.default_loader()
         self.extensions = torchvision.datasets.folder.IMG_EXTENSIONS
@@ -59,7 +59,7 @@ class CustomDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         path, target = self.samples[index]
         sample = self.loader(path)
-        return self.transform(sample) if self.transform else sample, target, self.get_score(index)
+        return self.transform(sample) if self.transform else sample, self.get_score(index)
 
     def get_score(self, index):
         path, _ = self.samples[index]
@@ -87,9 +87,9 @@ def main():
     softmax_scores = []
     iou_scores = []
     with torch.no_grad():
-        for image, tgt, score in dataloader:
+        for image, score in dataloader:
             softmaxes = net.forward(image)
-            softmax_scores.append(softmaxes[tgt])
+            softmax_scores.append(max(softmaxes))
             iou_scores.append(score)
     plt.plot(iou_scores, softmax_scores)
     plt.title("Softmax probability of correct class vs. IoU score")
