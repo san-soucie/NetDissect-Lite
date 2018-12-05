@@ -50,6 +50,9 @@ def loadmodel(hook_fn):
         print(model._modules)
         raise ae
     if settings.GPU:
-        model.cuda()
+        if not torch.cuda.is_available():
+            print("CUDA is not availible. Running on CPU...")
+        else:
+            model.cuda()
     model.eval()
     return model
