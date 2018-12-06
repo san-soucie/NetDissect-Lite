@@ -675,7 +675,7 @@ def wants(what, option):
         return True
     return what in option
 
-def normalize_image(rgb_image, model):
+def normalize_image(rgb_image, model, torch_normalize=True):
     """
     Load input image and preprocess for Caffe:
     - cast to float
@@ -689,7 +689,10 @@ def normalize_image(rgb_image, model):
     if model.input_space == 'bgr':
         img = img[:,:,::-1]
     if model.std is not None or model.mean is not None:
-        img = (img - np.mean(img, axis=(0,1))) * (model.std / np.std(img, axis=(0,1))) + model.mean
+        if torch_normalize:
+            img = (img - model.mean) / model.std
+        else:
+            img = (img - np.mean(img, axis=(0,1))) * (model.std / np.std(img, axis=(0,1))) + model.mean
     if list(img.shape[::-1]) == model.input_size or img.shape[-1] == model.input_size[0]:
         img = img.transpose((2,0,1))
     if model.input_range is not None:
