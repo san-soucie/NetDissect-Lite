@@ -12,6 +12,8 @@ from collections import OrderedDict
 from scipy.misc import imread
 from multiprocessing import Pool, cpu_count
 from multiprocessing.pool import ThreadPool
+import torchvision
+import torch
 from scipy.ndimage.interpolation import zoom
 
 
@@ -690,7 +692,10 @@ def normalize_image(rgb_image, model, torch_normalize=True):
         img = img[:,:,::-1]
     if model.std is not None or model.mean is not None:
         if torch_normalize:
-            img = (img - model.mean) / model.std
+            test_transforms = torchvision.transforms.Compose([
+                torchvision.transforms.ToTensor(),
+                torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+            img = test_transforms(torch.img)
         else:
             img = (img - np.mean(img, axis=(0,1))) * (model.std / np.std(img, axis=(0,1))) + model.mean
     if list(img.shape[::-1]) == model.input_size or img.shape[-1] == model.input_size[0]:
