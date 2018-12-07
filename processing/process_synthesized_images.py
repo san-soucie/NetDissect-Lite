@@ -11,11 +11,11 @@ class NetSoftmax(nn.Module):
 
     def __init__(self, num_classes=1000, aux_logits=True, transform_input=False):
         super(NetSoftmax, self).__init__()
-        self.net = torchvision.models.alexnet(pretrained=True,
-                                            num_classes=num_classes)
-#                                            aux_logits=aux_logits,
-#                                            transform_input=transform_input)
-#        self.net.classifier = nn.Linear(self.net.classifier.in_features*81, num_classes)
+        self.net = torchvision.models.alexnet(
+            pretrained=True, num_classes=num_classes)
+        #                                            aux_logits=aux_logits,
+        #                                            transform_input=transform_input)
+        #        self.net.classifier = nn.Linear(self.net.classifier.in_features*81, num_classes)
         self.sm = nn.Softmax()
 
     def forward(self, x):
