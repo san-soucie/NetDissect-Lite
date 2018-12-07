@@ -4,6 +4,7 @@ import torchvision
 import os
 import argparse
 import sys
+import datetime
 import numpy as np
 from scipy.stats import linregress
 
@@ -33,15 +34,15 @@ cornets_dataset = CustomDataset("../outputs/synthesizing-06:53:19/CORnet-S/clean
                                 transform=trnsfrm_norm,
                                 stopwords={})
 cornetz_dataset = CustomDataset("../outputs/synthesizing-06:53:19/CORnet-Z/clean/",
-                                transform=trnsfrm_norm,
-                                stopwords={})
+                                 transform=trnsfrm_norm,
+                                 stopwords={})
 
 cornets_dataset_no_norm = CustomDataset("../outputs/synthesizing-06:53:19/CORnet-S/clean/",
                                 transform=trnsfrm_no_norm ,
                                 stopwords={})
 cornetz_dataset_no_norm = CustomDataset("../outputs/synthesizing-06:53:19/CORnet-Z/clean/",
-                                transform=trnsfrm_no_norm ,
-                                stopwords={})
+                                 transform=trnsfrm_no_norm ,
+                                 stopwords={})
 
 cornets_dataloader = torch.utils.data.DataLoader(cornets_dataset)
 cornetz_dataloader = torch.utils.data.DataLoader(cornetz_dataset)
@@ -58,11 +59,14 @@ net.eval()
 cornet_s.eval()
 cornet_z.eval()
 
+
 def plot_fig(alexnet,
              cornet_model,
              cornet_dataloader,
              cornet_dataloader_no_norm,
-             net_name):
+             net_name,
+             eval_net_name,
+             p_val_plot = False):
     softmax_scores_object = []
     iou_scores_object = []
     cornet_scores_object = []
@@ -77,17 +81,13 @@ def plot_fig(alexnet,
     cornet_max_index_texture = []
 
     with torch.no_grad():
-        cornet_model = cornet_z.cuda()
-        cornet_dataloader = cornetz_dataloader
-        cornet_dataloader_no_norm = cornetz_dataloader_no_norm
-
         alexnet = alexnet.cuda()
         for no_norm, norm in zip(cornet_dataloader_no_norm, cornet_dataloader):
             image_no_norm, score, path = no_norm
             image_norm, _, _ = norm
             data_no_norm = image_no_norm.cuda()
             data_norm = image_norm.cuda()
-            cornet_softmax = net.forward(data_no_norm).cpu()
+            cornet_softmax = cornet_model.forward(data_no_norm).cpu()
             softmaxes = alexnet.forward(data_norm).cpu()
             val, idx = cornet_softmax.squeeze().max(0)
 
@@ -119,16 +119,19 @@ def plot_fig(alexnet,
     xs = np.linspace(0.01, 0.99, 98)
     ys = gradient * xs + intercept
     plt.plot(xs, ys, c='k')
-    plt.gca().annotate("r = %3.5f\np = %3.5f" % (r_value, p_value), (0.01, 0.9))
-
-    plt.title("AlexNet Softmax of " + net_name + " Maximal Activators")
+    if p_val_plot:
+        plt.gca().annotate("r = %3.5f\np = %3.5f" % (r_value, p_value), (0.01, 0.9))
+    else:
+        plt.gca().annotate("r = %3.5f" % (r_value), (0.01, 0.9))
+    plt.title(eval_net_name + "Softmax of " + net_name + " Maximal Activators")
 
     plt.xlim(left=0, right=0.5)
     plt.ylim(bottom=-0.1, top=1)
-    plt.xlabel('CORnet-Z Unit IoU Score')
-    plt.ylabel('AlexNet Softmax')
+    plt.xlabel(net_name + ' Unit IoU Score')
+    plt.ylabel(eval_net_name + ' Softmax')
     plt.legend()
-    img_filename = net_name + "x_Alexnet_softmax_vs_iou.pdf"
+    dt = str(datetime.datetime.now()).split()
+    img_filename = net_name + " " + eval_net_name + "_softmax_vs_iou" + dt[0] + "_" + dt[1] + ".pdf"
     plt.savefig(img_filename, bbox_inches='tight')
 
 
@@ -136,11 +139,11 @@ plot_fig(net,
          cornet_s.cuda(),
          cornets_dataloader,
          cornets_dataloader_no_norm,
-         "CORnet-S")
+         "CORnet-S", "AlexNet")
 
-# plot_fig(net,
-#          cornet_z.cuda(),
-#          cornetz_dataloader,
-#          cornetz_dataloader_no_norm,
-#          "CORnet-Z")
+plot_fig(net,
+         cornet_z.cuda(),
+         cornetz_dataloader,
+         cornetz_dataloader_no_norm,
+         "CORnet-Z", "AlexNet")
 

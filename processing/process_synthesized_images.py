@@ -25,19 +25,9 @@ class NetSoftmax(nn.Module):
 
 
 def get_params(filename):
-    hp = [None for _ in range(7)]
-    unit, \
-        category, \
-        label, \
-        score, \
-        layer, \
-        hp[0], \
-        hp[1], \
-        hp[2], \
-        hp[3], \
-        hp[4], \
-        hp[5],\
-        hp[6] = os.path.split(filename.rstrip('__0.jpg'))[1].split('_')
+    v = os.path.split(filename.rstrip('__0.png'))[1].split('_')
+    unit, category, label, score, layer = v[0:5]
+    hp = v[5:]
     params = {'unit': unit,
               'category': category,
               'label': label,
